@@ -1,0 +1,92 @@
+[
+  {
+    "question": "What electricity plans are available in Western Australia?",
+    "expected_topics": ["electricity", "plans", "WA", "Western Australia", "tariff"],
+    "category": "plans",
+    "difficulty": "easy"
+  },
+  {
+    "question": "How do I pay my bill online?",
+    "expected_topics": ["payment", "bill", "online", "my account"],
+    "category": "billing",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What should I do if I'm moving house?",
+    "expected_topics": ["moving", "house", "transfer", "connection", "disconnect"],
+    "category": "support",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is a solar feed-in tariff?",
+    "expected_topics": ["solar", "feed-in", "tariff", "renewable", "export"],
+    "category": "solar",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How can I get help with paying my energy bill?",
+    "expected_topics": ["hardship", "payment plan", "assistance", "financial", "support"],
+    "category": "support",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What's the difference between fixed and variable rate plans?",
+    "expected_topics": ["fixed", "variable", "rate", "tariff", "pricing"],
+    "category": "plans",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I read my energy bill?",
+    "expected_topics": ["bill", "charges", "usage", "breakdown", "understand"],
+    "category": "billing",
+    "difficulty": "medium"
+  },
+  {
+    "question": "What hardship programs are available?",
+    "expected_topics": ["hardship", "assistance", "payment", "concession", "help"],
+    "category": "support",
+    "difficulty": "easy"
+  },
+  {
+    "question": "Can I switch to a different energy plan?",
+    "expected_topics": ["switch", "change", "plan", "transfer"],
+    "category": "plans",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What are peak and off-peak rates?",
+    "expected_topics": ["peak", "off-peak", "rates", "time of use", "tariff"],
+    "category": "billing",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do I set up direct debit?",
+    "expected_topics": ["direct debit", "payment", "automatic", "bank"],
+    "category": "billing",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What do I need to do to connect electricity at a new address?",
+    "expected_topics": ["connection", "new address", "setup", "electricity"],
+    "category": "support",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How long does it take to process a payment?",
+    "expected_topics": ["payment", "processing", "time", "clear"],
+    "category": "billing",
+    "difficulty": "easy"
+  },
+  {
+    "question": "What are the benefits of bundling electricity and gas?",
+    "expected_topics": ["bundle", "electricity", "gas", "discount", "savings"],
+    "category": "plans",
+    "difficulty": "medium"
+  },
+  {
+    "question": "How can I reduce my energy consumption?",
+    "expected_topics": ["energy", "consumption", "reduce", "save", "efficiency"],
+    "category": "support",
+    "difficulty": "medium"
+  }
+]

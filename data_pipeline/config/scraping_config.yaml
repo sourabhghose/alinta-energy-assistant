@@ -1,0 +1,70 @@
+# Web Scraping Configuration for Alinta Energy Website
+
+# Target URLs to scrape
+urls:
+  plans:
+    - https://www.alintaenergy.com.au/plans
+    - https://www.alintaenergy.com.au/plans/electricity
+    - https://www.alintaenergy.com.au/plans/gas
+    - https://www.alintaenergy.com.au/plans/electricity/western-australia
+    - https://www.alintaenergy.com.au/plans/electricity/south-australia
+    - https://www.alintaenergy.com.au/plans/electricity/victoria
+    - https://www.alintaenergy.com.au/plans/electricity/queensland
+    - https://www.alintaenergy.com.au/plans/electricity/new-south-wales
+
+  help:
+    - https://www.alintaenergy.com.au/help
+    - https://www.alintaenergy.com.au/help/billing
+    - https://www.alintaenergy.com.au/help/payments
+    - https://www.alintaenergy.com.au/help/moving-house
+    - https://www.alintaenergy.com.au/help/account
+    - https://www.alintaenergy.com.au/help/connections
+
+  solar:
+    - https://www.alintaenergy.com.au/solar
+    - https://www.alintaenergy.com.au/solar/feed-in-tariff
+    - https://www.alintaenergy.com.au/renewable-energy
+
+  support:
+    - https://www.alintaenergy.com.au/hardship
+    - https://www.alintaenergy.com.au/contact
+    - https://www.alintaenergy.com.au/concessions
+
+# HTML selectors (may need adjustment based on actual site structure)
+selectors:
+  content:
+    - main
+    - article
+    - div.content
+    - div.page-content
+
+  remove:
+    - script
+    - style
+    - nav
+    - footer
+    - header
+    - iframe
+    - noscript
+    - aside
+
+# Scraping behavior
+settings:
+  delay_between_requests: 2.0  # seconds
+  timeout: 30  # seconds
+  max_retries: 3
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+
+# Content filtering
+filters:
+  min_content_length: 100  # characters
+  exclude_patterns:
+    - "404"
+    - "Page not found"
+    - "Access denied"
+
+# Chunking parameters
+chunking:
+  chunk_size: 400  # words
+  overlap_size: 50  # words
+  min_chunk_size: 50  # words

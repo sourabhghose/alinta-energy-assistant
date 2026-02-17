@@ -1,0 +1,31 @@
+# Databricks Apps Configuration
+# This file defines how the application should be deployed on Databricks Apps
+
+command:
+  - "sh"
+  - "-c"
+  - "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"
+
+env:
+  # Databricks configuration
+  - name: DATABRICKS_HOST
+    value: "https://e2-demo-west.cloud.databricks.com"
+
+  - name: DATABRICKS_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: databricks-token
+        key: token
+
+  # Application configuration
+  - name: DEBUG
+    value: "false"
+
+# Resource limits (optional)
+# resources:
+#   limits:
+#     memory: "2Gi"
+#     cpu: "1000m"
+#   requests:
+#     memory: "1Gi"
+#     cpu: "500m"
