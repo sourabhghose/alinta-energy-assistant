@@ -136,19 +136,32 @@ class AlintaRetriever:
             # Parse results
             data_array = response.result.data_array if response.result else []
 
-            # Format chunks
+            # Get column names from response
+            columns = response.manifest.columns if response.manifest else []
+            column_names = [col.name for col in columns] if columns else ["chunk_id", "chunk_text", "url", "title", "section"]
+
+            logger.info(f"Response columns: {column_names}")
+            logger.info(f"Retrieved {len(data_array)} results")
+
+            # Format chunks - data_array contains lists, not dicts
             chunks = []
-            for result in data_array:
+            for row in data_array:
+                # Convert list to dict using column names
+                if isinstance(row, list):
+                    result_dict = dict(zip(column_names, row))
+                else:
+                    result_dict = row  # Already a dict
+
                 chunk = {
-                    "chunk_id": result.get("chunk_id", ""),
-                    "content": result.get("chunk_text", ""),
-                    "source": result.get("url", ""),
-                    "title": result.get("title", ""),
-                    "section": result.get("section", ""),
+                    "chunk_id": result_dict.get("chunk_id", ""),
+                    "content": result_dict.get("chunk_text", ""),
+                    "source": result_dict.get("url", ""),
+                    "title": result_dict.get("title", ""),
+                    "section": result_dict.get("section", ""),
                 }
                 chunks.append(chunk)
 
-            logger.info(f"Retrieved {len(chunks)} chunks for query")
+            logger.info(f"Formatted {len(chunks)} chunks for query")
 
             return RetrievalResult(chunks=chunks, query=query)
 
