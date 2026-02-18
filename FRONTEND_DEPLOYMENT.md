@@ -130,11 +130,15 @@ Example questions help users get started:
 
 ### Branding
 
-Alinta Energy brand colors:
-- Primary Blue: `#0072BC`
-- Dark Blue: `#003C71`
-- Light Blue: `#E6F2F9`
-- Orange Accent: `#FF6B35`
+Alinta Energy official brand colors (updated):
+- **Primary Orange**: `#FF6B35` (main brand color - used for header, buttons, accents)
+- Orange Dark: `#E8582B` (hover states)
+- Orange Light: `#FFE8E0` (user message backgrounds)
+- White: `#FFFFFF` (clean backgrounds)
+- Text Dark: `#2D2D2D` (primary text)
+- Text Gray: `#666666` (secondary text)
+
+**Design Philosophy**: Corporate energy company aesthetic with clean white backgrounds and orange brand accents throughout
 
 ## Development
 
@@ -237,13 +241,42 @@ Content-Type: application/json
 
 ### Features Available
 
-- ✅ Real-time chat interface
-- ✅ RAG-powered responses
-- ✅ Source citations
-- ✅ Conversation history
-- ✅ Starter questions
-- ✅ Error handling
+- ✅ Real-time chat interface with orange Alinta branding
+- ✅ Official Alinta Energy logo in header
+- ✅ RAG-powered responses with proper formatting
+- ✅ Source citations with clickable links
+- ✅ Conversation history support
+- ✅ Updated starter questions that work with available data
+- ✅ Error handling with user-friendly messages
 - ✅ Mobile-responsive design
+- ✅ Inter font for professional typography (1.05rem, 1.8 line-height)
+- ✅ Clean white design with orange accents
+
+### Logo Details
+
+- **File**: `app/frontend/public/alinta-logo.jpg`
+- **Format**: JPEG (690x690px, 102KB)
+- **Display Size**: 50px height, auto width
+- **Location**: Header (left side, orange background)
+- **Fallback**: Text "ALINTA ENERGY" if image fails to load
+- **Serving**: Via FastAPI static file route for `.jpg` files
+
+## Starter Questions Updates
+
+The default starter questions have been updated to work better with the available vector search data:
+
+**Current Questions** (work well):
+1. "What electricity plans does Alinta Energy offer?" ✅
+2. "How do I pay my energy bill online?" ✅
+3. "What is a solar feed-in tariff?" ✅
+4. "What should I do if I'm moving house?" ✅
+5. "How can I get help with paying my energy bill?" ✅
+
+**Avoid Questions That Are Too Specific**:
+- ❌ "What electricity plans are available in my state?" (too location-specific)
+- ❌ "What is the price for plan X?" (requires specific plan data)
+
+The questions should be general enough to match content in the vector search index while still being useful to customers.
 
 ## Troubleshooting
 
@@ -273,6 +306,27 @@ Content-Type: application/json
 **Issue**: Slow initial load
 - **Solution**: This is normal - Vite bundles are optimized but may take a moment to parse
 - Consider code splitting for larger apps
+
+**Issue**: Logo not displaying
+- **Solution**: Verify logo file is uploaded to workspace as RAW format
+- Check that `app.py` has the static file serving route for image extensions
+- Ensure logo file is valid image (not HTML error page)
+- Example check:
+  ```bash
+  file app/frontend/public/alinta-logo.jpg
+  # Should show: JPEG image data
+  # NOT: HTML document text
+  ```
+
+**Issue**: "Service is initializing" error on first question
+- **Solution**: Check backend logs for import errors or authentication issues
+- Verify LLM model endpoint name is correct: `databricks-gpt-oss-120b`
+- Ensure messages are ChatMessage objects (see DEPLOYMENT_NOTES.md)
+
+**Issue**: "Failed to generate response" errors
+- **Solution**: Check for structured response handling in generation.py
+- LLM may return list format with reasoning blocks instead of plain string
+- Verify content parsing logic handles both formats
 
 ## Next Steps
 

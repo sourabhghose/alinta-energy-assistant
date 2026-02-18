@@ -74,8 +74,9 @@ This chatbot uses **Retrieval Augmented Generation (RAG)** to provide accurate, 
 ### Application
 - **Backend**: FastAPI (Python 3.10+)
 - **Frontend**: React 18 + TypeScript + Vite
-- **Styling**: Custom CSS (Alinta Energy brand colors)
+- **Styling**: Alinta Energy orange branding (#FF6B35) with Inter font
 - **Deployment**: Databricks Apps (serverless hosting)
+- **Authentication**: Service principal (OAuth)
 
 ## 📁 Project Structure
 
@@ -276,10 +277,10 @@ print(index.describe())
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `DATABRICKS_HOST` | Workspace URL | Required |
-| `DATABRICKS_TOKEN` | PAT token | Required |
+| `DATABRICKS_TOKEN` | PAT token | Optional (service principal in Apps) |
 | `VECTOR_SEARCH_ENDPOINT` | Vector Search endpoint | `alinta_support_endpoint` |
 | `VECTOR_SEARCH_INDEX` | Index name | `main.sgh.content_vector_index` |
-| `LLM_MODEL` | Model to use | `databricks-gpt-oss-120b-preview` |
+| `LLM_MODEL` | Model to use | `databricks-gpt-oss-120b` |
 | `TOP_K_RESULTS` | Documents to retrieve | `3` |
 | `DEBUG` | Debug mode | `false` |
 

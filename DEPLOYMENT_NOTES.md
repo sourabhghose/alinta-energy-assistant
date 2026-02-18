@@ -316,39 +316,131 @@ databricks apps get alinta-energy-assistant
 
 ### Current Deployment Status
 
-✅ **Basic FastAPI app deployed successfully**
-- App URL: https://alinta-energy-assistant-2556758628403379.aws.databricksapps.com
-- Status: RUNNING
-- Health endpoint: `/api/health`
+✅ **Full Application Deployed Successfully**
+- **App URL**: https://alinta-energy-assistant-2556758628403379.aws.databricksapps.com
+- **Status**: RUNNING
+- **Authentication**: Databricks OAuth
 
-⏳ **Pending Integration:**
-- Full RAG backend (retrieval + generation)
-- React frontend with chat interface
-- Secret management for API tokens
-- Production error handling and monitoring
+**Completed Features:**
+- ✅ Full RAG backend (Vector Search + LLM generation)
+- ✅ React frontend with Alinta Energy branding
+- ✅ Chat interface with conversation history
+- ✅ Source citations with clickable links
+- ✅ Service principal authentication (no token required)
+- ✅ Production error handling
+- ✅ Health check endpoints
 
 ---
 
-## Next Steps
+## LLM Integration Notes
 
-1. **Integrate Full Backend:**
-   - Upload remaining backend modules as RAW files
-   - Test Vector Search connectivity
-   - Test LLM endpoint connectivity
-   - Implement chat endpoint
+### Correct Model Endpoint Name
+**Issue**: Initial configuration used wrong model name
+- ❌ Wrong: `databricks-gpt-oss-120b-preview` (doesn't exist)
+- ✅ Correct: `databricks-gpt-oss-120b`
 
-2. **Add Frontend:**
-   - Build React frontend (`npm run build`)
-   - Upload dist folder
-   - Configure FastAPI to serve static files
+**Location**: `app/backend/config.py`
+```python
+llm_model: str = "databricks-gpt-oss-120b"  # Fixed model name
+```
 
-3. **Production Readiness:**
-   - Set up secret management for tokens
-   - Configure proper error handling
-   - Add monitoring and logging
-   - Test end-to-end RAG pipeline
+### Databricks SDK Message Format
+**Issue**: Foundation Model API requires SDK message objects, not plain dicts
 
-4. **Documentation:**
-   - Update README with deployment instructions
-   - Document API endpoints
-   - Add troubleshooting guide
+**Solution**: Use `ChatMessage` and `ChatMessageRole` from `databricks.sdk.service.serving`
+
+**Example** (`app/backend/rag/generation.py`):
+```python
+from databricks.sdk.service.serving import ChatMessage, ChatMessageRole
+
+# Convert plain dict to SDK object
+messages = [
+    ChatMessage(role=ChatMessageRole.SYSTEM, content=SYSTEM_PROMPT),
+    ChatMessage(role=ChatMessageRole.USER, content=user_message)
+]
+
+# Call API
+response = self.w.serving_endpoints.query(
+    name=self.model,
+    messages=messages,  # Must be ChatMessage objects
+    max_tokens=self.max_tokens,
+    temperature=self.temperature
+)
+```
+
+### Structured Response Handling
+**Issue**: GPT-OSS models return structured responses with reasoning blocks (list format), not plain strings
+
+**Solution**: Parse content to extract text from structured responses
+
+**Example**:
+```python
+# Handle both string and structured (list) responses
+content = response.choices[0].message.content
+if isinstance(content, list):
+    # Structured response - extract text blocks
+    answer = ""
+    for block in content:
+        if isinstance(block, dict) and block.get("type") == "text":
+            answer += block.get("text", "")
+else:
+    # Simple string response
+    answer = str(content)
+```
+
+### Static File Serving for Frontend
+**Added**: Route to serve logo images and other static assets
+
+**Location**: `app/app.py`
+```python
+# Serve logo and other static files from dist root
+@app.get("/{filename}.{ext}")
+async def serve_static_file(filename: str, ext: str):
+    """Serve static files like logo from dist root."""
+    if ext in ["svg", "png", "jpg", "ico"]:
+        file_path = frontend_dist_path / f"{filename}.{ext}"
+        if file_path.exists():
+            return FileResponse(str(file_path))
+    raise HTTPException(status_code=404, detail="File not found")
+```
+
+---
+
+## UI Branding
+
+### Alinta Energy Design
+- **Primary Color**: Orange `#FF6B35` (official Alinta brand color)
+- **Typography**: Inter font for modern, professional look
+- **Logo**: Official Alinta Energy logo in header
+- **Design**: Clean white background with orange accents
+- **Style**: Corporate energy company aesthetic
+
+### Key UI Updates
+1. **Header**: Bright orange background with logo
+2. **Messages**: White message bubbles with subtle shadows
+3. **Buttons**: Orange with hover effects
+4. **Typography**: 1.05rem font size, 1.8 line-height for readability
+5. **Starter Questions**: Updated to work with available data
+
+### Logo Integration
+- **File**: `app/frontend/public/alinta-logo.jpg` (102KB)
+- **Format**: JPEG 690x690px
+- **Display**: 50px height, auto width
+- **Fallback**: Text "ALINTA ENERGY" if image fails to load
+
+---
+
+## Production Deployment Checklist
+
+- ✅ Vector Search index created and online
+- ✅ Backend modules uploaded as RAW format
+- ✅ LLM model endpoint configured correctly
+- ✅ Message format compatible with Databricks SDK
+- ✅ Structured response parsing implemented
+- ✅ Frontend built and deployed
+- ✅ Static file serving configured
+- ✅ Service principal authentication working
+- ✅ Health checks passing
+- ✅ End-to-end RAG pipeline tested
+- ✅ UI branded with Alinta Energy colors
+- ✅ Error handling implemented
