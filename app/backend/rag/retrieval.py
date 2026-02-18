@@ -125,12 +125,12 @@ class AlintaRetriever:
             logger.info(f"Retrieving top {k} results for query: {query[:100]}...")
 
             # Perform similarity search using WorkspaceClient
+            # Note: filters parameter not supported in current SDK version
             response = self.w.vector_search_indexes.query_index(
                 index_name=self.index_name,
                 query_text=query,
                 columns=["chunk_id", "chunk_text", "url", "title", "section"],
-                num_results=k,
-                filters=filters
+                num_results=k
             )
 
             # Parse results
