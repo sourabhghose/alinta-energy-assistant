@@ -9,6 +9,17 @@
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Install Dependencies
+
+# COMMAND ----------
+
+# Install Databricks Vector Search SDK
+%pip install databricks-vector-search --quiet
+dbutils.library.restartPython()
+
+# COMMAND ----------
+
 from databricks.vector_search.client import VectorSearchClient
 from pyspark.sql import functions as F
 import time
