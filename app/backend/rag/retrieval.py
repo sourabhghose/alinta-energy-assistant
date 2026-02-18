@@ -1,7 +1,6 @@
 """Vector search retrieval logic for Alinta Energy RAG chatbot."""
 
 from databricks.sdk import WorkspaceClient
-from databricks.sdk.service.vectorsearch import VectorSearchIndex
 from typing import List, Dict, Optional
 import logging
 from ..config import settings

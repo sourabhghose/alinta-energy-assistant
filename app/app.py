@@ -1,5 +1,13 @@
 """FastAPI application for Alinta Energy Assistant with full RAG integration."""
 
+import sys
+from pathlib import Path
+
+# Add current directory to Python path for backend imports
+current_dir = Path(__file__).parent
+if str(current_dir) not in sys.path:
+    sys.path.insert(0, str(current_dir))
+
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -8,7 +16,6 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict
 import logging
 import os
-from pathlib import Path
 
 # Configure logging
 logging.basicConfig(
@@ -85,20 +92,31 @@ def get_rag_pipeline():
 
     try:
         logger.info("Initializing RAG pipeline...")
+        logger.info(f"Python path: {sys.path[:3]}")
+        logger.info(f"Current directory: {Path(__file__).parent}")
 
         # Import here to avoid startup failures
+        logger.info("Importing backend modules...")
         from backend.rag.retrieval import AlintaRetriever
         from backend.rag.generation import AlintaGenerator, RAGPipeline
+        logger.info("✅ Backend modules imported successfully")
 
+        logger.info("Initializing retriever...")
         retriever = AlintaRetriever()
+        logger.info("✅ Retriever initialized")
+
+        logger.info("Initializing generator...")
         generator = AlintaGenerator()
+        logger.info("✅ Generator initialized")
+
+        logger.info("Creating RAG pipeline...")
         _rag_pipeline = RAGPipeline(retriever=retriever, generator=generator)
 
-        logger.info("RAG pipeline initialized successfully")
+        logger.info("✅ RAG pipeline initialized successfully")
         return _rag_pipeline
 
     except Exception as e:
-        logger.error(f"Failed to initialize RAG pipeline: {str(e)}", exc_info=True)
+        logger.error(f"❌ Failed to initialize RAG pipeline: {str(e)}", exc_info=True)
         _initialization_error = e
         raise
 
