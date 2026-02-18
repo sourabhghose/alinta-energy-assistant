@@ -15,6 +15,7 @@ from datetime import datetime
 import json
 from typing import Dict, List
 import time
+from pyspark.sql import functions as F
 
 # COMMAND ----------
 
