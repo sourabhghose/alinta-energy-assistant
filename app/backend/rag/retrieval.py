@@ -1,6 +1,7 @@
 """Vector search retrieval logic for Alinta Energy RAG chatbot."""
 
-from databricks.vector_search.client import VectorSearchClient
+from databricks.sdk import WorkspaceClient
+from databricks.sdk.service.vectorsearch import VectorSearchIndex
 from typing import List, Dict, Optional
 import logging
 from ..config import settings
@@ -73,16 +74,20 @@ class AlintaRetriever:
     def __init__(self):
         """Initialize the retriever with Vector Search client."""
         try:
-            self.client = VectorSearchClient(
-                workspace_url=settings.databricks_host,
-                personal_access_token=settings.databricks_token,
-                disable_notice=True
-            )
+            # Initialize Workspace Client
+            # When running inside Databricks Apps, token can be None (uses service principal)
+            if settings.databricks_token:
+                self.w = WorkspaceClient(
+                    host=settings.databricks_host,
+                    token=settings.databricks_token
+                )
+            else:
+                # Use default authentication (service principal in Databricks Apps)
+                self.w = WorkspaceClient(host=settings.databricks_host)
 
-            self.index = self.client.get_index(
-                endpoint_name=settings.vector_search_endpoint,
-                index_name=settings.vector_search_index
-            )
+            # Store index configuration
+            self.endpoint_name = settings.vector_search_endpoint
+            self.index_name = settings.vector_search_index
 
             logger.info(f"Vector Search client initialized for index: {settings.vector_search_index}")
 
@@ -120,8 +125,9 @@ class AlintaRetriever:
 
             logger.info(f"Retrieving top {k} results for query: {query[:100]}...")
 
-            # Perform similarity search
-            results = self.index.similarity_search(
+            # Perform similarity search using WorkspaceClient
+            response = self.w.vector_search_indexes.query_index(
+                index_name=self.index_name,
                 query_text=query,
                 columns=["chunk_id", "chunk_text", "url", "title", "section"],
                 num_results=k,
@@ -129,7 +135,7 @@ class AlintaRetriever:
             )
 
             # Parse results
-            data_array = results.get("result", {}).get("data_array", [])
+            data_array = response.result.data_array if response.result else []
 
             # Format chunks
             chunks = []
@@ -180,7 +186,8 @@ class AlintaRetriever:
         """
         try:
             # Try a simple search
-            self.index.similarity_search(
+            self.w.vector_search_indexes.query_index(
+                index_name=self.index_name,
                 query_text="test",
                 columns=["chunk_id"],
                 num_results=1

@@ -22,18 +22,33 @@ logger = logging.getLogger(__name__)
 # Initialize router
 router = APIRouter()
 
-# Initialize RAG components (singleton pattern)
-try:
-    retriever = AlintaRetriever()
-    generator = AlintaGenerator()
-    rag_pipeline = RAGPipeline(retriever=retriever, generator=generator)
-    logger.info("RAG pipeline initialized successfully")
-except Exception as e:
-    logger.error(f"Failed to initialize RAG pipeline: {str(e)}")
-    # Allow app to start even if RAG initialization fails
-    retriever = None
-    generator = None
-    rag_pipeline = None
+# Initialize RAG components (lazy loading)
+_retriever = None
+_generator = None
+_rag_pipeline = None
+_initialization_error = None
+
+def get_rag_pipeline():
+    """Lazy initialize and return RAG pipeline."""
+    global _retriever, _generator, _rag_pipeline, _initialization_error
+
+    if _rag_pipeline is not None:
+        return _rag_pipeline
+
+    if _initialization_error is not None:
+        raise _initialization_error
+
+    try:
+        logger.info("Initializing RAG pipeline...")
+        _retriever = AlintaRetriever()
+        _generator = AlintaGenerator()
+        _rag_pipeline = RAGPipeline(retriever=_retriever, generator=_generator)
+        logger.info("RAG pipeline initialized successfully")
+        return _rag_pipeline
+    except Exception as e:
+        logger.error(f"Failed to initialize RAG pipeline: {str(e)}", exc_info=True)
+        _initialization_error = e
+        raise
 
 
 @router.post(
@@ -64,9 +79,11 @@ async def chat(request: ChatRequest) -> ChatResponse:
     Raises:
         HTTPException: If request is invalid or processing fails
     """
-    # Validate RAG pipeline is initialized
-    if not rag_pipeline:
-        logger.error("RAG pipeline not initialized")
+    # Get RAG pipeline (lazy init)
+    try:
+        pipeline = get_rag_pipeline()
+    except Exception as e:
+        logger.error(f"RAG pipeline not available: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Service is initializing. Please try again in a moment."
@@ -92,7 +109,7 @@ async def chat(request: ChatRequest) -> ChatResponse:
             ]
 
         # Run RAG pipeline
-        result = rag_pipeline.answer_question(
+        result = pipeline.answer_question(
             query=question,
             conversation_history=history,
             top_k=request.top_k
@@ -136,26 +153,32 @@ async def health() -> HealthResponse:
     """
     components = {}
 
+    # Try to initialize RAG pipeline if not already done
+    try:
+        pipeline = get_rag_pipeline()
+    except:
+        pipeline = None
+
     # Check Vector Search
-    if retriever:
+    if _retriever:
         try:
-            components["vector_search"] = retriever.health_check()
+            components["vector_search"] = _retriever.health_check()
         except:
             components["vector_search"] = False
     else:
         components["vector_search"] = False
 
     # Check LLM
-    if generator:
+    if _generator:
         try:
-            components["llm"] = generator.health_check()
+            components["llm"] = _generator.health_check()
         except:
             components["llm"] = False
     else:
         components["llm"] = False
 
     # Overall status
-    overall_healthy = all(components.values()) and rag_pipeline is not None
+    overall_healthy = all(components.values()) and pipeline is not None
     status_str = "healthy" if overall_healthy else "degraded"
 
     return HealthResponse(

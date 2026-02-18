@@ -116,6 +116,8 @@ alinta-energy-assistant/
 
 ## 🚀 Getting Started
 
+> **📝 Deployment Guide**: For detailed deployment instructions, troubleshooting, and production best practices, see **[DEPLOYMENT_NOTES.md](DEPLOYMENT_NOTES.md)**
+
 ### Prerequisites
 
 - Databricks Workspace (AWS/Azure/GCP)
@@ -144,9 +146,14 @@ databricks workspace import-dir data_pipeline/notebooks /Workspace/Users/<your-e
 # 3. Create chunks
 %run ./03_create_chunks
 
-# 4. Setup Vector Search
-%run ./04_setup_vector_search
+# 4. Setup Vector Search (see note below)
+%run ./04_setup_vector_search_alternative
 ```
+
+> **⚠️ Important Note on Vector Search:**
+> The Vector Search Python SDK may not be available in all Databricks runtimes. If you encounter import errors with `databricks.vector_search`, you'll need to create the Vector Search index via the Databricks UI instead.
+>
+> **See [DEPLOYMENT_NOTES.md](DEPLOYMENT_NOTES.md#vector-search-setup)** for detailed UI-based setup instructions or use the helper script: `./check-vector-search-status.sh`
 
 3. **Schedule daily scraping (optional)**
 

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Quick script to check Vector Search index status
+# Run this periodically to see when the index is ready
+
+echo "🔍 Checking Vector Search Index Status..."
+echo ""
+echo "Index: main.sgh.content_vector_index"
+echo "Endpoint: alinta_support_endpoint"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "To check status:"
+echo ""
+echo "1. Via UI:"
+echo "   https://e2-demo-west.cloud.databricks.com/#catalog/main/sgh"
+echo "   → Look for 'content_vector_index'"
+echo "   → Status should be 'ONLINE'"
+echo ""
+echo "2. Via SQL in Databricks notebook:"
+echo "   DESCRIBE VECTOR INDEX main.sgh.content_vector_index;"
+echo ""
+echo "3. When ONLINE, you'll see:"
+echo "   ✅ Status: ONLINE"
+echo "   ✅ Ready for queries"
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "⏱️  Expected build time: 10-15 minutes"
+echo ""
+echo "While you wait, the app is ready to deploy!"
+echo "Once the index is ONLINE, we'll deploy immediately."

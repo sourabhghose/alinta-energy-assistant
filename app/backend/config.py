@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     # Databricks configuration
     databricks_host: str = os.getenv("DATABRICKS_HOST", "")
-    databricks_token: str = os.getenv("DATABRICKS_TOKEN", "")
+    databricks_token: Optional[str] = os.getenv("DATABRICKS_TOKEN", None)
 
     # Vector Search configuration
     vector_search_endpoint: str = "alinta_support_endpoint"
@@ -56,7 +56,8 @@ def validate_config() -> bool:
     if not settings.databricks_host:
         raise ValueError("DATABRICKS_HOST environment variable is required")
 
-    if not settings.databricks_token:
-        raise ValueError("DATABRICKS_TOKEN environment variable is required")
+    # Token is optional when running inside Databricks Apps (uses service principal)
+    # if not settings.databricks_token:
+    #     raise ValueError("DATABRICKS_TOKEN environment variable is required")
 
     return True

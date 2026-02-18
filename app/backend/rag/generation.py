@@ -35,8 +35,10 @@ class AlintaGenerator:
         """Initialize the generator with OpenAI-compatible client."""
         try:
             # Initialize OpenAI client pointing to Databricks Foundation Model APIs
+            # When running inside Databricks Apps, token can be None (uses service principal)
+            api_key = settings.databricks_token or "placeholder"  # OpenAI client requires a key
             self.client = OpenAI(
-                api_key=settings.databricks_token,
+                api_key=api_key,
                 base_url=f"{settings.databricks_host}/serving-endpoints"
             )
 
