@@ -1,6 +1,7 @@
 """LLM generation logic for Alinta Energy RAG chatbot."""
 
 from openai import OpenAI
+from databricks.sdk import WorkspaceClient
 from typing import List, Dict, Optional
 import logging
 from ..config import settings
@@ -34,9 +35,23 @@ class AlintaGenerator:
     def __init__(self):
         """Initialize the generator with OpenAI-compatible client."""
         try:
+            # Get proper authentication token
+            if settings.databricks_token:
+                api_key = settings.databricks_token
+                logger.info("Using provided databricks_token")
+            else:
+                # When running inside Databricks Apps, get token from WorkspaceClient
+                logger.info("Getting token from WorkspaceClient (service principal)")
+                w = WorkspaceClient(host=settings.databricks_host)
+                # Get the token from the auth provider
+                api_key = w.config.authenticate()
+                if hasattr(api_key, 'token'):
+                    api_key = api_key.token
+                elif callable(api_key):
+                    api_key = api_key()
+                logger.info("✅ Token obtained from WorkspaceClient")
+
             # Initialize OpenAI client pointing to Databricks Foundation Model APIs
-            # When running inside Databricks Apps, token can be None (uses service principal)
-            api_key = settings.databricks_token or "placeholder"  # OpenAI client requires a key
             self.client = OpenAI(
                 api_key=api_key,
                 base_url=f"{settings.databricks_host}/serving-endpoints"
@@ -46,10 +61,10 @@ class AlintaGenerator:
             self.max_tokens = settings.llm_max_tokens
             self.temperature = settings.llm_temperature
 
-            logger.info(f"LLM client initialized with model: {self.model}")
+            logger.info(f"✅ LLM client initialized with model: {self.model}")
 
         except Exception as e:
-            logger.error(f"Failed to initialize LLM client: {str(e)}")
+            logger.error(f"Failed to initialize LLM client: {str(e)}", exc_info=True)
             raise
 
     def generate(
