@@ -5,38 +5,177 @@
 ### Issue: Vector Search SDK Not Available
 The `databricks-vector-search` package does not exist as a standalone package. The Vector Search functionality is included in `databricks-sdk`, but the Python SDK for creating indexes programmatically may not be available in all Databricks runtimes.
 
-### Solution: Create Vector Search Index via UI
+### Solution: Create Vector Search Index via Databricks UI
 
-**Step 1: Navigate to Databricks Catalog**
-1. Go to https://e2-demo-west.cloud.databricks.com
-2. Click "Catalog" in the left sidebar
-3. Navigate to: `main` → `sgh` → `gold_content_chunks`
+Follow these detailed steps to create the Vector Search index through the Databricks web interface:
 
-**Step 2: Create Vector Search Index**
-1. Click the "gold_content_chunks" table
-2. Click "Create" button at the top
-3. Select "Vector Search Index"
+#### Step 1: Access the Databricks Catalog
 
-**Step 3: Configure Index Settings**
-Fill in the following configuration:
-- **Index name**: `main.sgh.content_vector_index`
-- **Endpoint**: `alinta_support_endpoint` (create if needed)
-- **Source table**: `main.sgh.gold_content_chunks`
-- **Primary key**: `chunk_id`
-- **Columns to sync**: Select ALL columns
-- **Embedding source column**: `chunk_text`
-- **Embedding model**: `databricks-gte-large-en`
-- **Sync mode**: Triggered
+1. **Open your Databricks workspace**
+   - Navigate to: `https://e2-demo-west.cloud.databricks.com` (or your workspace URL)
+   - Log in with your credentials
 
-**Step 4: Wait for Index Build**
-1. Click "Create"
-2. Wait approximately 10-15 minutes for index to build
-3. Status should change to "ONLINE"
+2. **Open the Catalog**
+   - In the left sidebar, click on **"Catalog"** icon (looks like a database/folder icon)
+   - This opens the Unity Catalog browser
 
-**Step 5: Verify Index Status**
-Check the index status via:
-- **UI**: Navigate to Catalog → main → sgh → content_vector_index
-- **SQL**: `DESCRIBE VECTOR INDEX main.sgh.content_vector_index;`
+3. **Navigate to your source table**
+   - Click on the catalog: **`main`**
+   - Click on the schema: **`sgh`**
+   - Scroll down and click on the table: **`gold_content_chunks`**
+
+#### Step 2: Initiate Vector Search Index Creation
+
+1. **Open the Create menu**
+   - At the top of the table details page, you'll see a **"Create"** button (or "+ Create" depending on UI version)
+   - Click the **"Create"** dropdown button
+
+2. **Select Vector Search Index**
+   - From the dropdown menu, select **"Vector Search Index"**
+   - This opens the "Create Vector Search Index" wizard
+
+#### Step 3: Create Vector Search Endpoint (if needed)
+
+If you don't already have a Vector Search endpoint:
+
+1. **In the index creation wizard**, you'll see an "Endpoint" field
+2. If no endpoint exists, click **"Create new endpoint"** or **"+ New Endpoint"**
+3. **Endpoint configuration:**
+   - **Name**: `alinta_support_endpoint`
+   - **Endpoint type**: Select **"Standard"** (recommended for production)
+   - Click **"Create"**
+4. Wait 2-3 minutes for the endpoint to provision (status will show "Provisioning" → "Online")
+
+#### Step 4: Configure the Vector Search Index
+
+Fill in the index configuration form with these exact values:
+
+1. **Basic Settings:**
+   - **Index name**: `main.sgh.content_vector_index`
+     - Must be in format: `catalog.schema.index_name`
+   - **Endpoint**: Select `alinta_support_endpoint` (from dropdown)
+   - **Source table**: `main.sgh.gold_content_chunks`
+     - Should be pre-filled if you started from the table
+
+2. **Key Column:**
+   - **Primary key**: Select `chunk_id` from dropdown
+     - This uniquely identifies each chunk
+
+3. **Sync Configuration:**
+   - **Sync mode**: Select **"Triggered"** (recommended)
+     - "Triggered" = Manual sync when you want
+     - "Continuous" = Auto-sync on table changes (higher cost)
+
+4. **Columns to Index:**
+   - **Columns to sync**: Click **"Select all"** or manually select:
+     - `chunk_id`
+     - `chunk_text`
+     - `url`
+     - `title`
+     - `section`
+     - `scraped_at`
+   - This ensures all metadata is available in search results
+
+5. **Embedding Configuration:**
+   - **Embedding source column**: Select `chunk_text` from dropdown
+     - This is the text that will be embedded as vectors
+   - **Embedding model**: Select `databricks-gte-large-en`
+     - This is a high-quality English embedding model
+     - Alternative: `databricks-bge-large-en` (if available)
+
+6. **Advanced Settings** (leave as defaults):
+   - **Embedding dimension**: Auto-detected (1024 for gte-large)
+   - **Distance metric**: Cosine similarity (default)
+
+#### Step 5: Create and Monitor the Index
+
+1. **Review your configuration**
+   - Double-check all fields match the values above
+   - Ensure `chunk_text` is the embedding source
+
+2. **Click "Create"**
+   - The wizard will close and index creation begins
+   - You'll be redirected to the index details page
+
+3. **Monitor build progress**
+   - **Status** will show:
+     - "Provisioning" → "Online - Indexing" → "Online"
+   - **Progress bar** shows indexing progress
+   - Estimated time: 10-15 minutes for ~1000 chunks
+
+4. **Wait for "ONLINE" status**
+   - ✅ Status should eventually show: **"Online"**
+   - The index is now ready to use!
+
+#### Step 6: Verify the Index
+
+Once the status is "Online", verify it works:
+
+**Option A: Via UI**
+1. On the index details page, click **"Query index"** button
+2. Enter a test query: `"electricity plans in Western Australia"`
+3. Set number of results: `3`
+4. Click **"Run query"**
+5. You should see relevant chunks returned with similarity scores
+
+**Option B: Via SQL Notebook**
+```sql
+-- Describe the index
+DESCRIBE VECTOR INDEX main.sgh.content_vector_index;
+
+-- Query the index
+SELECT * FROM VECTOR_SEARCH(
+  index => 'main.sgh.content_vector_index',
+  query => 'electricity plans in Western Australia',
+  num_results => 3
+);
+```
+
+**Option C: Via Python Notebook**
+```python
+from databricks.sdk import WorkspaceClient
+
+w = WorkspaceClient()
+
+# Query the index
+results = w.vector_search_indexes.query_index(
+    index_name="main.sgh.content_vector_index",
+    query_text="electricity plans in Western Australia",
+    num_results=3
+)
+
+# Display results
+for item in results.result.data_array:
+    print(f"Title: {item.get('title')}")
+    print(f"Content: {item.get('chunk_text')[:100]}...")
+    print(f"URL: {item.get('url')}")
+    print("-" * 80)
+```
+
+#### Troubleshooting
+
+**Issue: "Endpoint not found"**
+- Solution: Create the endpoint first (see Step 3)
+- Wait for endpoint status to be "Online" before creating index
+
+**Issue: "Table not found"**
+- Solution: Verify the data pipeline notebooks completed successfully
+- Check that `main.sgh.gold_content_chunks` table exists
+
+**Issue: "Embedding model not available"**
+- Solution: Try alternative model: `databricks-bge-large-en`
+- Contact Databricks support if no models are available
+
+**Issue: Index stuck at "Provisioning"**
+- Solution: Wait 5 more minutes (initial provisioning can be slow)
+- If still stuck after 30 minutes, delete and recreate the index
+
+**Issue: "No results returned" when querying**
+- Solution: Check that the source table has data:
+  ```sql
+  SELECT COUNT(*) FROM main.sgh.gold_content_chunks;
+  ```
+- Ensure indexing completed (status = "Online", not "Online - Indexing")
 
 ### Helper Script
 Use `check-vector-search-status.sh` to see instructions for checking index status.
