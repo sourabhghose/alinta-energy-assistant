@@ -1,2 +1,16 @@
-fastapi
-uvicorn[standard]
+# FastAPI and server
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+
+# Databricks SDK (includes Vector Search)
+databricks-sdk>=0.14.0
+
+# OpenAI-compatible client for Foundation Model APIs
+openai>=1.3.0
+
+# Data validation
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Utilities
+python-multipart>=0.0.6
