@@ -33,29 +33,16 @@ class AlintaGenerator:
     """Generator for Alinta Energy chatbot responses using LLM."""
 
     def __init__(self):
-        """Initialize the generator with OpenAI-compatible client."""
+        """Initialize the generator with Databricks SDK."""
         try:
-            # Get proper authentication token
+            # Use WorkspaceClient for authentication
             if settings.databricks_token:
-                api_key = settings.databricks_token
+                self.w = WorkspaceClient(host=settings.databricks_host, token=settings.databricks_token)
                 logger.info("Using provided databricks_token")
             else:
-                # When running inside Databricks Apps, get token from WorkspaceClient
-                logger.info("Getting token from WorkspaceClient (service principal)")
-                w = WorkspaceClient(host=settings.databricks_host)
-                # Get the token from the auth provider
-                api_key = w.config.authenticate()
-                if hasattr(api_key, 'token'):
-                    api_key = api_key.token
-                elif callable(api_key):
-                    api_key = api_key()
-                logger.info("✅ Token obtained from WorkspaceClient")
-
-            # Initialize OpenAI client pointing to Databricks Foundation Model APIs
-            self.client = OpenAI(
-                api_key=api_key,
-                base_url=f"{settings.databricks_host}/serving-endpoints"
-            )
+                # When running inside Databricks Apps, use service principal auth
+                self.w = WorkspaceClient(host=settings.databricks_host)
+                logger.info("Using WorkspaceClient with service principal auth")
 
             self.model = settings.llm_model
             self.max_tokens = settings.llm_max_tokens
@@ -105,14 +92,12 @@ class AlintaGenerator:
             logger.info(f"Generating response for query: {query[:100]}...")
             logger.debug(f"Context length: {len(context)} chars")
 
-            # Call LLM
-            response = self.client.chat.completions.create(
-                model=self.model,
+            # Call LLM using Databricks SDK
+            response = self.w.serving_endpoints.query(
+                name=self.model,
                 messages=messages,
                 max_tokens=self.max_tokens,
-                temperature=self.temperature,
-                top_p=0.95,
-                stop=None
+                temperature=self.temperature
             )
 
             # Extract answer
@@ -155,9 +140,9 @@ class AlintaGenerator:
             True if healthy, False otherwise
         """
         try:
-            # Try a simple generation
-            response = self.client.chat.completions.create(
-                model=self.model,
+            # Try a simple generation using Databricks SDK
+            response = self.w.serving_endpoints.query(
+                name=self.model,
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant."},
                     {"role": "user", "content": "Say 'OK' if you can read this."}
