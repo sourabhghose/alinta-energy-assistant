@@ -106,9 +106,9 @@ def get_rag_pipeline():
 # API Endpoints
 # ============================================================================
 
-@app.get("/", response_model=Dict)
-async def root():
-    """Root endpoint."""
+@app.get("/api")
+async def api_info():
+    """API information endpoint."""
     return {
         "message": "Alinta Energy Assistant API",
         "status": "running",
@@ -244,15 +244,25 @@ if frontend_dist_path.exists() and frontend_dist_path.is_dir():
         name="assets"
     )
 
-    # Serve index.html for all non-API routes (SPA support)
+    # Serve index.html for root path
+    @app.get("/")
+    async def serve_root():
+        """Serve React frontend at root."""
+        index_path = frontend_dist_path / "index.html"
+        if index_path.exists():
+            return FileResponse(str(index_path))
+        else:
+            raise HTTPException(status_code=404, detail="Frontend not built")
+
+    # Serve index.html for all other non-API routes (SPA support)
     @app.get("/{full_path:path}")
     async def serve_frontend(full_path: str):
         """Serve React frontend for all non-API routes."""
         # Don't intercept API routes or docs
-        if full_path.startswith("api/") or full_path.startswith("docs") or full_path.startswith("redoc"):
+        if full_path.startswith("api") or full_path.startswith("docs") or full_path.startswith("redoc"):
             raise HTTPException(status_code=404, detail="Not found")
 
-        # Serve index.html
+        # Serve index.html for SPA routing
         index_path = frontend_dist_path / "index.html"
         if index_path.exists():
             return FileResponse(str(index_path))
@@ -261,3 +271,19 @@ if frontend_dist_path.exists() and frontend_dist_path.is_dir():
 else:
     logger.warning(f"Frontend dist directory not found at: {frontend_dist_path}")
     logger.warning("API-only mode. Frontend not available.")
+
+    # Fallback root endpoint when frontend is not available
+    @app.get("/")
+    async def root_fallback():
+        """Root endpoint when frontend is not built."""
+        return {
+            "message": "Alinta Energy Assistant API",
+            "status": "running",
+            "version": "1.0.0",
+            "note": "Frontend not built. API available at /api/chat",
+            "endpoints": {
+                "chat": "/api/chat",
+                "health": "/api/health",
+                "docs": "/docs"
+            }
+        }
