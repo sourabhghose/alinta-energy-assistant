@@ -4,7 +4,7 @@
 # MAGIC
 # MAGIC This notebook creates and configures the Mosaic AI Vector Search index for RAG retrieval.
 # MAGIC
-# MAGIC **Input**: main.alinta.gold_content_chunks
+# MAGIC **Input**: main.sgh.gold_content_chunks
 # MAGIC **Output**: Vector Search index with embeddings
 
 # COMMAND ----------
@@ -22,8 +22,8 @@ import time
 
 # Vector Search configuration
 ENDPOINT_NAME = "alinta_support_endpoint"
-INDEX_NAME = "main.alinta.content_vector_index"
-SOURCE_TABLE = "main.alinta.gold_content_chunks"
+INDEX_NAME = "main.sgh.content_vector_index"
+SOURCE_TABLE = "main.sgh.gold_content_chunks"
 PRIMARY_KEY = "chunk_id"
 EMBEDDING_SOURCE_COLUMN = "chunk_text"
 EMBEDDING_MODEL = "databricks-gte-large-en"

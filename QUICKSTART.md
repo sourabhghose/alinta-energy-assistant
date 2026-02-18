@@ -38,7 +38,7 @@ In Databricks SQL Editor or notebook:
 CREATE CATALOG IF NOT EXISTS main;
 
 -- Create schema
-CREATE SCHEMA IF NOT EXISTS main.alinta;
+CREATE SCHEMA IF NOT EXISTS main.sgh;
 
 -- Verify
 SHOW SCHEMAS IN main;
@@ -50,17 +50,17 @@ Open Databricks Workspace and run notebooks in order:
 
 1. **01_web_scraper.py**
    - Scrapes Alinta Energy website
-   - Creates `main.alinta.bronze_scraped_content`
+   - Creates `main.sgh.bronze_scraped_content`
    - Expected runtime: ~3-5 minutes
 
 2. **02_process_bronze.py**
    - Cleans HTML content
-   - Creates `main.alinta.silver_clean_content`
+   - Creates `main.sgh.silver_clean_content`
    - Expected runtime: ~2 minutes
 
 3. **03_create_chunks.py**
    - Chunks content for RAG
-   - Creates `main.alinta.gold_content_chunks`
+   - Creates `main.sgh.gold_content_chunks`
    - Expected runtime: ~2 minutes
 
 4. **04_setup_vector_search.py**
@@ -72,7 +72,7 @@ Open Databricks Workspace and run notebooks in order:
 
 ```python
 # In Databricks notebook
-display(spark.table("main.alinta.gold_content_chunks"))
+display(spark.table("main.sgh.gold_content_chunks"))
 
 # Expected: 50-200 chunks depending on website content
 ```
@@ -241,7 +241,7 @@ from databricks.vector_search.client import VectorSearchClient
 client = VectorSearchClient()
 index = client.get_index(
     endpoint_name="alinta_support_endpoint",
-    index_name="main.alinta.content_vector_index"
+    index_name="main.sgh.content_vector_index"
 )
 
 print(index.describe())

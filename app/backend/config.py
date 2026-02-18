@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     # Vector Search configuration
     vector_search_endpoint: str = "alinta_support_endpoint"
-    vector_search_index: str = "main.alinta.content_vector_index"
+    vector_search_index: str = "main.sgh.content_vector_index"
 
     # LLM configuration
     llm_model: str = "databricks-gpt-oss-120b-preview"

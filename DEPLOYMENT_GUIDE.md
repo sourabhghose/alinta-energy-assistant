@@ -28,19 +28,19 @@
    - Attach to "Shared Endpoint" warehouse (or any available cluster)
    - Click **"Run All"** at the top
    - Wait ~3-5 minutes for completion
-   - ✅ Verify: You should see "Data saved to main.alinta.bronze_scraped_content"
+   - ✅ Verify: You should see "Data saved to main.sgh.bronze_scraped_content"
 
    **② 02_process_bronze.py**
    - Open the notebook
    - Click **"Run All"**
    - Wait ~2 minutes
-   - ✅ Verify: You should see "Data saved to main.alinta.silver_clean_content"
+   - ✅ Verify: You should see "Data saved to main.sgh.silver_clean_content"
 
    **③ 03_create_chunks.py**
    - Open the notebook
    - Click **"Run All"**
    - Wait ~2 minutes
-   - ✅ Verify: You should see "Data saved to main.alinta.gold_content_chunks"
+   - ✅ Verify: You should see "Data saved to main.sgh.gold_content_chunks"
 
    **④ 04_setup_vector_search.py** ⚠️ IMPORTANT
    - Open the notebook
@@ -106,7 +106,7 @@ After Step 1, verify tables were created:
 
 ```sql
 -- Run in a SQL notebook or SQL editor
-SHOW TABLES IN main.alinta;
+SHOW TABLES IN main.sgh;
 ```
 
 Expected output: 3 tables
@@ -123,7 +123,7 @@ from databricks.vector_search.client import VectorSearchClient
 client = VectorSearchClient()
 index = client.get_index(
     endpoint_name="alinta_support_endpoint",
-    index_name="main.alinta.content_vector_index"
+    index_name="main.sgh.content_vector_index"
 )
 
 # Should print status: ONLINE or ONLINE_NO_PENDING_UPDATE
@@ -140,13 +140,13 @@ print(index.describe())
 ```
 
 **Tables created:**
-- `main.alinta.bronze_scraped_content` (raw HTML)
-- `main.alinta.silver_clean_content` (clean text)
-- `main.alinta.gold_content_chunks` (chunked for RAG)
+- `main.sgh.bronze_scraped_content` (raw HTML)
+- `main.sgh.silver_clean_content` (clean text)
+- `main.sgh.gold_content_chunks` (chunked for RAG)
 
 **Vector Search:**
 - Endpoint: `alinta_support_endpoint`
-- Index: `main.alinta.content_vector_index`
+- Index: `main.sgh.content_vector_index`
 
 **Secret scope:**
 - Name: `alinta-app-secrets`
@@ -160,7 +160,7 @@ print(index.describe())
 ```sql
 -- Run this first:
 CREATE CATALOG IF NOT EXISTS main;
-CREATE SCHEMA IF NOT EXISTS main.alinta;
+CREATE SCHEMA IF NOT EXISTS main.sgh;
 ```
 
 **Issue: Vector Search endpoint creation fails**
@@ -176,7 +176,7 @@ CREATE SCHEMA IF NOT EXISTS main.alinta;
 **Issue: App shows errors**
 - Check logs: `databricks apps logs alinta-energy-assistant`
 - Verify Vector Search index is ONLINE
-- Verify tables have data: `SELECT COUNT(*) FROM main.alinta.gold_content_chunks`
+- Verify tables have data: `SELECT COUNT(*) FROM main.sgh.gold_content_chunks`
 
 ---
 

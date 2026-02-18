@@ -9,20 +9,20 @@ Use this checklist to track your implementation progress.
 - [ ] Unity Catalog enabled
 - [ ] Personal Access Token (PAT) created
 - [ ] Databricks CLI configured locally
-- [ ] Created catalog and schema: `main.alinta`
+- [ ] Created catalog and schema: `main.sgh`
 
 ### 1.2 Web Scraping
 - [ ] Uploaded `01_web_scraper.py` to workspace
 - [ ] Reviewed and updated target URLs in config
 - [ ] Executed web scraper notebook
-- [ ] Verified Bronze table: `main.alinta.bronze_scraped_content`
+- [ ] Verified Bronze table: `main.sgh.bronze_scraped_content`
 - [ ] Checked scraped content quality
 - [ ] Confirmed 10+ pages scraped successfully
 
 ### 1.3 Data Processing
 - [ ] Uploaded `02_process_bronze.py` to workspace
 - [ ] Executed processing notebook
-- [ ] Verified Silver table: `main.alinta.silver_clean_content`
+- [ ] Verified Silver table: `main.sgh.silver_clean_content`
 - [ ] Checked content cleaning quality
 - [ ] Confirmed no HTML tags in clean content
 
@@ -30,14 +30,14 @@ Use this checklist to track your implementation progress.
 - [ ] Uploaded `03_create_chunks.py` to workspace
 - [ ] Reviewed chunking parameters (chunk_size, overlap)
 - [ ] Executed chunking notebook
-- [ ] Verified Gold table: `main.alinta.gold_content_chunks`
+- [ ] Verified Gold table: `main.sgh.gold_content_chunks`
 - [ ] Checked chunk quality and size distribution
 - [ ] Confirmed 50+ chunks created
 
 ### 1.5 Vector Search Setup
 - [ ] Uploaded `04_setup_vector_search.py` to workspace
 - [ ] Created Vector Search endpoint: `alinta_support_endpoint`
-- [ ] Created Vector Search index: `main.alinta.content_vector_index`
+- [ ] Created Vector Search index: `main.sgh.content_vector_index`
 - [ ] Waited for index to be ONLINE
 - [ ] Tested similarity search with sample query
 - [ ] Verified retrieval returns relevant results

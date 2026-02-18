@@ -4,8 +4,8 @@
 # MAGIC
 # MAGIC This notebook chunks clean content for vector search indexing.
 # MAGIC
-# MAGIC **Input**: main.alinta.silver_clean_content
-# MAGIC **Output**: main.alinta.gold_content_chunks
+# MAGIC **Input**: main.sgh.silver_clean_content
+# MAGIC **Output**: main.sgh.gold_content_chunks
 
 # COMMAND ----------
 
@@ -91,7 +91,7 @@ chunk_text_udf = F.udf(chunk_text, ArrayType(StringType()))
 
 # COMMAND ----------
 
-silver_df = spark.table("main.alinta.silver_clean_content")
+silver_df = spark.table("main.sgh.silver_clean_content")
 
 print(f"Silver records to chunk: {silver_df.count()}")
 silver_df.select("url", "title", "content_length").show(5)
@@ -179,13 +179,13 @@ chunks_df.select("chunk_id", "title", "chunk_index", F.substring("chunk_text", 1
  .format("delta")
  .mode("overwrite")
  .option("overwriteSchema", "true")
- .saveAsTable("main.alinta.gold_content_chunks"))
+ .saveAsTable("main.sgh.gold_content_chunks"))
 
-print("Data saved to main.alinta.gold_content_chunks")
+print("Data saved to main.sgh.gold_content_chunks")
 
 # Enable Change Data Feed for Delta Sync
 spark.sql("""
-    ALTER TABLE main.alinta.gold_content_chunks
+    ALTER TABLE main.sgh.gold_content_chunks
     SET TBLPROPERTIES (delta.enableChangeDataFeed = true)
 """)
 
@@ -199,7 +199,7 @@ print("Change Data Feed enabled for Vector Search sync")
 # COMMAND ----------
 
 # Verify Gold table
-gold_table = spark.table("main.alinta.gold_content_chunks")
+gold_table = spark.table("main.sgh.gold_content_chunks")
 
 print(f"Total chunks in Gold table: {gold_table.count()}")
 print("\nTable schema:")

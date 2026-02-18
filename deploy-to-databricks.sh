@@ -76,13 +76,13 @@ echo ""
 echo "Run these notebooks IN ORDER (click 'Run All' in each):"
 echo ""
 echo "  1️⃣  01_web_scraper.py        (~3 min)"
-echo "      Creates: main.alinta.bronze_scraped_content"
+echo "      Creates: main.sgh.bronze_scraped_content"
 echo ""
 echo "  2️⃣  02_process_bronze.py     (~2 min)"
-echo "      Creates: main.alinta.silver_clean_content"
+echo "      Creates: main.sgh.silver_clean_content"
 echo ""
 echo "  3️⃣  03_create_chunks.py      (~2 min)"
-echo "      Creates: main.alinta.gold_content_chunks"
+echo "      Creates: main.sgh.gold_content_chunks"
 echo ""
 echo "  4️⃣  04_setup_vector_search.py (~10-15 min)"
 echo "      Creates: Vector Search index"
@@ -124,7 +124,7 @@ cat << 'EOF'
 To verify the data pipeline worked, you can run this in a Databricks notebook:
 
 # Check tables
-spark.sql("SHOW TABLES IN main.alinta").show()
+spark.sql("SHOW TABLES IN main.sgh").show()
 
 # Expected: bronze_scraped_content, silver_clean_content, gold_content_chunks
 
@@ -133,7 +133,7 @@ from databricks.vector_search.client import VectorSearchClient
 client = VectorSearchClient()
 index = client.get_index(
     endpoint_name="alinta_support_endpoint",
-    index_name="main.alinta.content_vector_index"
+    index_name="main.sgh.content_vector_index"
 )
 print(index.describe())
 

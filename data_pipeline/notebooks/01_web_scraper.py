@@ -5,7 +5,7 @@
 # MAGIC This notebook scrapes content from alintaenergy.com.au and stores it in Bronze Delta table.
 # MAGIC
 # MAGIC **Schedule**: Daily at 2 AM
-# MAGIC **Output**: main.alinta.bronze_scraped_content
+# MAGIC **Output**: main.sgh.bronze_scraped_content
 
 # COMMAND ----------
 
@@ -175,9 +175,9 @@ df.select("url", "title", "status").show(truncate=False)
  .format("delta")
  .mode("append")
  .option("mergeSchema", "true")
- .saveAsTable("main.alinta.bronze_scraped_content"))
+ .saveAsTable("main.sgh.bronze_scraped_content"))
 
-print(f"\nData saved to main.alinta.bronze_scraped_content")
+print(f"\nData saved to main.sgh.bronze_scraped_content")
 
 # COMMAND ----------
 
@@ -187,7 +187,7 @@ print(f"\nData saved to main.alinta.bronze_scraped_content")
 # COMMAND ----------
 
 # Verify data was written
-bronze_df = spark.table("main.alinta.bronze_scraped_content")
+bronze_df = spark.table("main.sgh.bronze_scraped_content")
 print(f"Total records in Bronze table: {bronze_df.count()}")
 
 # Show latest scrape
@@ -224,6 +224,6 @@ print(f"Records after deduplication: {deduplicated_df.count()}")
  .write
  .format("delta")
  .mode("overwrite")
- .saveAsTable("main.alinta.bronze_scraped_content"))
+ .saveAsTable("main.sgh.bronze_scraped_content"))
 
 print("Deduplication complete!")

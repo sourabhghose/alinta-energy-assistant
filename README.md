@@ -256,7 +256,7 @@ from databricks.vector_search.client import VectorSearchClient
 client = VectorSearchClient()
 index = client.get_index(
     endpoint_name="alinta_support_endpoint",
-    index_name="main.alinta.content_vector_index"
+    index_name="main.sgh.content_vector_index"
 )
 
 print(index.describe())
@@ -271,7 +271,7 @@ print(index.describe())
 | `DATABRICKS_HOST` | Workspace URL | Required |
 | `DATABRICKS_TOKEN` | PAT token | Required |
 | `VECTOR_SEARCH_ENDPOINT` | Vector Search endpoint | `alinta_support_endpoint` |
-| `VECTOR_SEARCH_INDEX` | Index name | `main.alinta.content_vector_index` |
+| `VECTOR_SEARCH_INDEX` | Index name | `main.sgh.content_vector_index` |
 | `LLM_MODEL` | Model to use | `databricks-gpt-oss-120b-preview` |
 | `TOP_K_RESULTS` | Documents to retrieve | `3` |
 | `DEBUG` | Debug mode | `false` |
@@ -327,10 +327,10 @@ chunking:
 
 ```sql
 -- Grant access to index
-GRANT SELECT ON VECTOR_INDEX main.alinta.content_vector_index TO `app-users`;
+GRANT SELECT ON VECTOR_INDEX main.sgh.content_vector_index TO `app-users`;
 
 -- Grant access to tables
-GRANT SELECT ON TABLE main.alinta.gold_content_chunks TO `app-users`;
+GRANT SELECT ON TABLE main.sgh.gold_content_chunks TO `app-users`;
 ```
 
 ## 🐛 Troubleshooting
@@ -340,7 +340,7 @@ GRANT SELECT ON TABLE main.alinta.gold_content_chunks TO `app-users`;
 **Q: Vector Search returns no results**
 - Verify index is built: Check status in Databricks UI
 - Trigger manual sync: `index.sync()`
-- Check source table has data: `spark.table("main.alinta.gold_content_chunks").count()`
+- Check source table has data: `spark.table("main.sgh.gold_content_chunks").count()`
 
 **Q: LLM endpoint unavailable**
 - Verify model endpoint exists: `databricks apps list`

@@ -4,8 +4,8 @@
 # MAGIC
 # MAGIC This notebook cleans and processes raw HTML content from Bronze layer to Silver layer.
 # MAGIC
-# MAGIC **Input**: main.alinta.bronze_scraped_content
-# MAGIC **Output**: main.alinta.silver_clean_content
+# MAGIC **Input**: main.sgh.bronze_scraped_content
+# MAGIC **Output**: main.sgh.silver_clean_content
 
 # COMMAND ----------
 
@@ -66,7 +66,7 @@ clean_html_udf = F.udf(clean_html_content, StringType())
 
 # Read from Bronze table (only successful scrapes)
 bronze_df = (
-    spark.table("main.alinta.bronze_scraped_content")
+    spark.table("main.sgh.bronze_scraped_content")
     .filter(F.col("status") == "success")
     .filter(F.length("html") > 0)
 )
@@ -136,9 +136,9 @@ silver_df.select("url", "title", F.substring("clean_content", 1, 200).alias("pre
  .format("delta")
  .mode("overwrite")
  .option("overwriteSchema", "true")
- .saveAsTable("main.alinta.silver_clean_content"))
+ .saveAsTable("main.sgh.silver_clean_content"))
 
-print("Data saved to main.alinta.silver_clean_content")
+print("Data saved to main.sgh.silver_clean_content")
 
 # COMMAND ----------
 
@@ -148,7 +148,7 @@ print("Data saved to main.alinta.silver_clean_content")
 # COMMAND ----------
 
 # Verify Silver table
-silver_table = spark.table("main.alinta.silver_clean_content")
+silver_table = spark.table("main.sgh.silver_clean_content")
 
 print(f"Total records in Silver table: {silver_table.count()}")
 print("\nTable schema:")

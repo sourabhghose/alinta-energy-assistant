@@ -144,7 +144,7 @@ After running notebooks, verify:
 
 ```sql
 -- Check tables (run in Databricks SQL or notebook)
-SHOW TABLES IN main.alinta;
+SHOW TABLES IN main.sgh;
 ```
 
 ```python
@@ -153,7 +153,7 @@ from databricks.vector_search.client import VectorSearchClient
 client = VectorSearchClient()
 index = client.get_index(
     endpoint_name="alinta_support_endpoint",
-    index_name="main.alinta.content_vector_index"
+    index_name="main.sgh.content_vector_index"
 )
 print(index.describe())
 ```

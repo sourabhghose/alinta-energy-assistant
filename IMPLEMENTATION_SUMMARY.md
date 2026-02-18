@@ -29,13 +29,13 @@
 4. `04_setup_vector_search.py` - Vector Search index creation
 
 **Delta Lake Tables:**
-- Bronze: `main.alinta.bronze_scraped_content` (raw HTML)
-- Silver: `main.alinta.silver_clean_content` (clean text)
-- Gold: `main.alinta.gold_content_chunks` (chunked content)
+- Bronze: `main.sgh.bronze_scraped_content` (raw HTML)
+- Silver: `main.sgh.silver_clean_content` (clean text)
+- Gold: `main.sgh.gold_content_chunks` (chunked content)
 
 **Vector Search:**
 - Endpoint: `alinta_support_endpoint`
-- Index: `main.alinta.content_vector_index`
+- Index: `main.sgh.content_vector_index`
 - Embedding Model: `databricks-gte-large-en`
 - Sync Type: Delta Sync (triggered)
 
