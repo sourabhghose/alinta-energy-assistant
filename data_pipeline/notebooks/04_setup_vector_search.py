@@ -14,8 +14,8 @@
 
 # COMMAND ----------
 
-# Install Databricks Vector Search SDK
-%pip install databricks-vector-search --quiet
+# Install Databricks SDK (includes Vector Search client)
+%pip install databricks-sdk --upgrade --quiet
 dbutils.library.restartPython()
 
 # COMMAND ----------
