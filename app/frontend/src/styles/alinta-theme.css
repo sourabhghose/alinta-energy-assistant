@@ -277,11 +277,128 @@ body {
   color: var(--alinta-orange);
 }
 
+/* Markdown Tables */
+.message-text table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.95rem;
+}
+
+.message-text table th {
+  background: var(--alinta-orange-light);
+  color: var(--text-dark);
+  font-weight: 600;
+  padding: 0.75rem;
+  text-align: left;
+  border: 1px solid var(--border-gray);
+}
+
+.message-text table td {
+  padding: 0.75rem;
+  border: 1px solid var(--border-gray);
+  vertical-align: top;
+}
+
+.message-text table tr:nth-child(even) {
+  background: var(--light-gray);
+}
+
+.message-text table tr:hover {
+  background: var(--alinta-orange-light);
+}
+
+/* Markdown Links */
+.message-text a {
+  color: var(--alinta-orange);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.message-text a:hover {
+  color: var(--alinta-orange-dark);
+}
+
+/* Markdown Code */
+.message-text code {
+  background: var(--light-gray);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+  color: var(--text-dark);
+}
+
+.message-text pre {
+  background: var(--light-gray);
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.message-text pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Markdown Blockquotes */
+.message-text blockquote {
+  border-left: 4px solid var(--alinta-orange);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--text-gray);
+  font-style: italic;
+}
+
+/* Markdown Horizontal Rules */
+.message-text hr {
+  border: none;
+  border-top: 2px solid var(--border-gray);
+  margin: 1.5rem 0;
+}
+
+/* Markdown Headings in messages */
+.message-text h1,
+.message-text h2,
+.message-text h3,
+.message-text h4,
+.message-text h5,
+.message-text h6 {
+  color: var(--alinta-orange);
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+}
+
+.message-text h1 { font-size: 1.5em; }
+.message-text h2 { font-size: 1.3em; }
+.message-text h3 { font-size: 1.15em; }
+.message-text h4 { font-size: 1.05em; }
+
+/* First heading should have no top margin */
+.message-text > :first-child {
+  margin-top: 0;
+}
+
+/* Last element should have no bottom margin */
+.message-text > :last-child {
+  margin-bottom: 0;
+}
+
 /* User message styling */
 .message.user .message-text {
   font-size: 1rem;
   color: var(--text-dark);
   font-weight: 500;
+}
+
+/* Disable markdown styling in user messages */
+.message.user .message-text table,
+.message.user .message-text th,
+.message.user .message-text td {
+  all: unset;
+  display: inline;
 }
 
 /* Loading State */

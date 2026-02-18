@@ -1,4 +1,6 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Message } from '../types';
 import SourceCard from './SourceCard';
 
@@ -12,8 +14,12 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
       {messages.map((message, index) => (
         <div key={index} className={`message ${message.role}`}>
           <div className="message-content">
-            {/* Message text */}
-            <div className="message-text">{message.content}</div>
+            {/* Message text with markdown rendering */}
+            <div className="message-text">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {message.content}
+              </ReactMarkdown>
+            </div>
 
             {/* Sources (only for assistant messages) */}
             {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
