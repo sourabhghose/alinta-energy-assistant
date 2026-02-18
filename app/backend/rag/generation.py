@@ -2,6 +2,7 @@
 
 from openai import OpenAI
 from databricks.sdk import WorkspaceClient
+from databricks.sdk.service.serving import ChatMessage, ChatMessageRole
 from typing import List, Dict, Optional
 import logging
 from ..config import settings
@@ -76,18 +77,22 @@ class AlintaGenerator:
             Exception if generation fails
         """
         try:
-            # Build messages
-            messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+            # Build messages using SDK ChatMessage objects
+            messages = [
+                ChatMessage(role=ChatMessageRole.SYSTEM, content=SYSTEM_PROMPT)
+            ]
 
             # Add conversation history if provided
             if conversation_history:
                 # Limit history to last 5 turns to manage context length
                 recent_history = conversation_history[-10:]  # Last 5 back-and-forth
-                messages.extend(recent_history)
+                for msg in recent_history:
+                    role = ChatMessageRole.USER if msg["role"] == "user" else ChatMessageRole.ASSISTANT
+                    messages.append(ChatMessage(role=role, content=msg["content"]))
 
             # Add current query with context
             user_message = create_rag_prompt(query=query, context=context)
-            messages.append({"role": "user", "content": user_message})
+            messages.append(ChatMessage(role=ChatMessageRole.USER, content=user_message))
 
             logger.info(f"Generating response for query: {query[:100]}...")
             logger.debug(f"Context length: {len(context)} chars")
@@ -100,8 +105,20 @@ class AlintaGenerator:
                 temperature=self.temperature
             )
 
-            # Extract answer
-            answer = response.choices[0].message.content
+            # Extract answer - handle both string and structured (list) responses
+            content = response.choices[0].message.content
+            if isinstance(content, list):
+                # Structured response with reasoning blocks - extract text content
+                answer = ""
+                for block in content:
+                    if isinstance(block, dict) and block.get("type") == "text":
+                        answer += block.get("text", "")
+                if not answer:
+                    # Fallback: concatenate all text fields
+                    answer = " ".join(str(block.get("text", "")) for block in content if isinstance(block, dict) and "text" in block)
+            else:
+                # Simple string response
+                answer = str(content)
 
             # Extract metadata
             metadata = {
@@ -144,8 +161,8 @@ class AlintaGenerator:
             response = self.w.serving_endpoints.query(
                 name=self.model,
                 messages=[
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": "Say 'OK' if you can read this."}
+                    ChatMessage(role=ChatMessageRole.SYSTEM, content="You are a helpful assistant."),
+                    ChatMessage(role=ChatMessageRole.USER, content="Say 'OK' if you can read this.")
                 ],
                 max_tokens=10,
                 temperature=0

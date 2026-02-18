@@ -6,11 +6,11 @@ interface StarterQuestionsProps {
 
 // Fallback questions if API fails
 const DEFAULT_QUESTIONS = [
-  "What electricity plans are available in my state?",
-  "How do I pay my energy bill?",
+  "What electricity plans does Alinta Energy offer?",
+  "How do I pay my energy bill online?",
   "What is a solar feed-in tariff?",
   "What should I do if I'm moving house?",
-  "How can I get help with paying my bill?",
+  "How can I get help with paying my energy bill?",
 ];
 
 const StarterQuestions: React.FC<StarterQuestionsProps> = ({ onSelectQuestion }) => {

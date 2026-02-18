@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     vector_search_index: str = "main.sgh.content_vector_index"
 
     # LLM configuration
-    llm_model: str = "databricks-gpt-oss-120b-preview"
+    llm_model: str = "databricks-gpt-oss-120b"
     llm_max_tokens: int = 1024
     llm_temperature: float = 0.7
 

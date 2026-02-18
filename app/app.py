@@ -272,6 +272,16 @@ if frontend_dist_path.exists() and frontend_dist_path.is_dir():
         else:
             raise HTTPException(status_code=404, detail="Frontend not built")
 
+    # Serve logo and other static files from dist root
+    @app.get("/{filename}.{ext}")
+    async def serve_static_file(filename: str, ext: str):
+        """Serve static files like logo from dist root."""
+        if ext in ["svg", "png", "jpg", "ico"]:
+            file_path = frontend_dist_path / f"{filename}.{ext}"
+            if file_path.exists():
+                return FileResponse(str(file_path))
+        raise HTTPException(status_code=404, detail="File not found")
+
     # Serve index.html for all other non-API routes (SPA support)
     @app.get("/{full_path:path}")
     async def serve_frontend(full_path: str):

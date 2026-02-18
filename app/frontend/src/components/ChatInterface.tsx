@@ -99,9 +99,25 @@ const ChatInterface: React.FC = () => {
   return (
     <div className="chat-container">
       <div className="chat-header">
-        <div className="header-content">
-          <h1>Alinta Energy Assistant</h1>
-          <p>Ask me anything about plans, billing, payments, or support</p>
+        <div className="header-left">
+          <div className="logo-container">
+            <img
+              src="/alinta-logo.jpg"
+              alt="Alinta Energy"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.className = 'logo-fallback';
+                fallback.innerHTML = '<span style="font-size: 1.6rem; font-weight: 700; color: white;">ALINTA ENERGY</span>';
+                target.parentElement?.appendChild(fallback);
+              }}
+            />
+          </div>
+          <div className="header-content">
+            <h1>AI Assistant</h1>
+            <p>Ask me anything about plans, billing, payments, or support</p>
+          </div>
         </div>
         {messages.length > 0 && (
           <button onClick={clearChat} className="clear-button" title="Clear conversation">

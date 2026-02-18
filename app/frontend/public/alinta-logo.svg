@@ -1,0 +1,11 @@
+<svg width="180" height="50" viewBox="0 0 180 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Alinta Energy Logo - Based on actual brand -->
+  <!-- "alinta" text -->
+  <text x="5" y="32" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" fill="white" letter-spacing="-0.5">
+    alinta
+  </text>
+  <!-- "energy" text -->
+  <text x="105" y="32" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="300" fill="white" letter-spacing="-0.5">
+    energy
+  </text>
+</svg>
